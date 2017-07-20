@@ -12,13 +12,25 @@ const io = socketIO(server); // returns a web socket server
 
 app.use(express.static(publicPath));
 
-io.on('connection', (socket) => {
-  console.log('New user connected');
+io.on('connection', socket => {
+    console.log('New user connected');
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
+    socket.on('createMessage', ({ from, text }) => {
+        const msg = {
+            from,
+            text,
+            createdAt: Date.now()
+        };
+        console.log('Message from Client:');
+        console.log(JSON.stringify(msg, undefined, 2));
+        socket.emit('newMessage', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
 });
+
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
