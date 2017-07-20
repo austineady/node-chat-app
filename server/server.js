@@ -19,11 +19,11 @@ io.on('connection', socket => {
         const msg = {
             from,
             text,
-            createdAt: Date.now()
+            createdAt: new Date().getTime()
         };
         console.log('Message from Client:');
         console.log(JSON.stringify(msg, undefined, 2));
-        socket.emit('newMessage', msg);
+        io.emit('newMessage', msg);
     });
 
     socket.on('disconnect', () => {
