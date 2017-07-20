@@ -10,35 +10,19 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server); // returns a web socket server
 
+const { generateMessage } = require('./utils/message');
+
 app.use(express.static(publicPath));
 
 io.on('connection', socket => {
-    console.log('New user connected');
+    // Welcome only the new user to chat room
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
-    socket.emit('newMessage', {
-      from: 'Admin',
-      text: 'Welcome to the chat app'
-    });
-
-    socket.broadcast.emit('newMessage', {
-      from: 'Admin',
-      text: 'New user joined'
-    });
+    // Let everyone else know a new user has joined
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
     socket.on('createMessage', ({ from, text }) => {
-        const msg = {
-            from,
-            text,
-            createdAt: new Date().getTime()
-        };
-        console.log('Message from Client:');
-        console.log(JSON.stringify(msg, undefined, 2));
-        io.emit('newMessage', msg);
-        // socket.broadcast.emit('newMessage', {
-        //     from,
-        //     text,
-        //     createdAt: new Date().getTime()
-        // });
+        io.emit('newMessage', generateMessage(from, text));
     });
 
     socket.on('disconnect', () => {
