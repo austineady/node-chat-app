@@ -5,7 +5,8 @@ socket.on('connect', function() {
 });
 
 socket.on('newMessage', function(data) {
-    console.log('Got new message', data);
+    console.log('New Message:');
+    console.log(JSON.stringify(data, undefined, 2));
 });
 
 socket.on('disconnect', function() {
